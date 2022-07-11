@@ -1,0 +1,24 @@
+{
+    "name": "cntnd/cli",
+    "description": "cntnd skeleton cli",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Cntnd\\": "src/Cntnd/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thomas D'Ascoli",
+            "email": "thomas@dasco.li"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "composer-runtime-api": "^2.0",
+        "simple-cli/simple-cli": "^1.6"
+    },
+    "bin": [
+        "bin/cntnd-cli"
+    ]
+}
