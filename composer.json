@@ -16,7 +16,8 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "composer-runtime-api": "^2.0",
-        "simple-cli/simple-cli": "^1.6"
+        "simple-cli/simple-cli": "^1.6",
+        "z4kn4fein/php-semver": "^1.2"
     },
     "bin": [
         "bin/cntnd-cli"
