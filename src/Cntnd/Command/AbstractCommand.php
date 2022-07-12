@@ -11,7 +11,6 @@ use SimpleCli\SimpleCli;
  * todo
  * - check for what else?
  */
-
 abstract class AbstractCommand implements Command
 {
     use Verbose;
@@ -38,6 +37,34 @@ abstract class AbstractCommand implements Command
     {
         if (!is_file("gulpfile.js")) {
             return $this->error($cli, "Unable to find gulpfile.js");
+        }
+        return true;
+    }
+
+    /**
+     * @param SimpleCli $cli
+     *
+     * @return string
+     */
+    protected function moduleName(SimpleCli $cli): string
+    {
+        if ($this->hasPackageJson($cli)) {
+            $packageJson = $this->packageJson();
+            return str_replace("cntnd_", "", $packageJson['name']);
+        }
+        return "";
+    }
+
+    /**
+     * @param SimpleCli $cli
+     *
+     * @return bool
+     */
+    protected function isSkeleton(SimpleCli $cli): bool
+    {
+        if ($this->hasPackageJson($cli)) {
+            $packageJson = $this->packageJson();
+            return (!strripos("skeleton", $packageJson['name']));
         }
         return true;
     }
