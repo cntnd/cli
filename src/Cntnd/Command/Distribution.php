@@ -9,7 +9,7 @@ use z4kn4fein\SemVer\Version;
 use z4kn4fein\SemVer\VersionFormatException;
 
 /**
- * Initialize the Module.
+ * Make a new Distribution with an incremented Version.
  */
 class Distribution extends AbstractCommand
 {
