@@ -1,5 +1,5 @@
 {
-    "name": "cntnd/cli",
+    "name": "cntnd/cntnd-skelton-cli",
     "description": "cntnd skeleton cli",
     "license": "MIT",
     "autoload": {
