@@ -3,14 +3,13 @@
 namespace Cntnd\Command;
 
 
-use SimpleCli\Command;
 use SimpleCli\Options\Help;
 use SimpleCli\SimpleCli;
 
 /**
  * Initialize the Module.
  */
-class Init implements Command
+class Init extends AbstractCommand
 {
     use Help;
 
@@ -46,16 +45,16 @@ class Init implements Command
         $this->info($cli, "Initializing Module: ${moduleName}");
 
         // package.json
-        if (!is_file("package.json")) {
-            return $this->error($cli, "Unable to find package.json");
+        if (!$this->hasPackageJson($cli)) {
+            return false;
         }
         $this->doPackageJson();
 
         // src files
 
         if ($this->gulp) {
-            if (!is_file("gulpfile.js")) {
-                return $this->error($cli, "Unable to find gulpfile");
+            if (!$this->hasGulpfile($cli)) {
+                return false;
             }
 
             $this->info($cli, "Running gulp init");
@@ -87,26 +86,5 @@ class Init implements Command
     {
         // Remove underscores, capitalize words.
         return ucwords(str_replace('_', ' ', $this->moduleName));
-    }
-
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     *
-     * @return bool
-     */
-    protected function error(SimpleCli $cli, string $text): bool
-    {
-        $cli->writeLine($text, 'red');
-        return false;
-    }
-
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     */
-    protected function info(SimpleCli $cli, string $text): void
-    {
-        $cli->writeLine($text, 'light_cyan');
     }
 }

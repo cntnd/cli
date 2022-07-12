@@ -3,7 +3,6 @@
 namespace Cntnd\Command;
 
 
-use SimpleCli\Command;
 use SimpleCli\Options\Help;
 use SimpleCli\Options\Verbose;
 use SimpleCli\SimpleCli;
@@ -11,7 +10,7 @@ use SimpleCli\SimpleCli;
 /**
  * Add new Template File to Module.
  */
-class Template implements Command
+class Template extends AbstractCommand
 {
     use Help;
     use Verbose;
@@ -136,27 +135,5 @@ class Template implements Command
     protected function ensureTemplateDirectoryExists(): bool
     {
         return is_dir($this->destination);
-    }
-
-
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     *
-     * @return bool
-     */
-    protected function error(SimpleCli $cli, string $text): bool
-    {
-        $cli->writeLine($text, 'red');
-        return false;
-    }
-
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     */
-    protected function info(SimpleCli $cli, string $text): void
-    {
-        $cli->writeLine($text, 'light_cyan');
     }
 }

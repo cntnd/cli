@@ -3,9 +3,7 @@
 namespace Cntnd\Command;
 
 
-use SimpleCli\Command;
 use SimpleCli\Options\Help;
-use SimpleCli\Options\Verbose;
 use SimpleCli\SimpleCli;
 use z4kn4fein\SemVer\Version;
 use z4kn4fein\SemVer\VersionFormatException;
@@ -13,10 +11,9 @@ use z4kn4fein\SemVer\VersionFormatException;
 /**
  * Initialize the Module.
  */
-class Distribution implements Command
+class Distribution extends AbstractCommand
 {
     use Help;
-    use Verbose;
 
     private static string $DEFAULT_VERSION = "1.0.0";
 
@@ -34,16 +31,40 @@ class Distribution implements Command
      */
     public bool $no_increment = false;
 
+    /**
+     * @option
+     *
+     * Optional: Increment Major version
+     */
+    public bool $major = false;
+
+    /**
+     * @option
+     *
+     * Optional: Increment Minor version
+     */
+    public bool $minor = false;
+
     public function run(SimpleCli $cli): bool
     {
-        if (!is_file("package.json")) {
-            return $this->error($cli, "Unable to find package.json");
+        if (!$this->hasPackageJson($cli)) {
+            return false;
         }
 
         // RUN
 
         $increment = !$this->no_increment;
         $forced = !empty($this->version);
+
+
+        $this->info($cli, "Major: $this->major");
+        if ($this->major == true) {
+            $this->info($cli, "Major: Yes");
+        }
+        $this->info($cli, "Minor: $this->minor");
+        if ($this->minor == true) {
+            $this->info($cli, "Minor: Yes");
+        }
 
         $version = $this->versionFromPackageJson();
         $this->info($cli, "Version in package.json: ${version}");
@@ -63,9 +84,12 @@ class Distribution implements Command
         }
 
         $this->info($cli, "Version: ${version}");
+        $this->updatePackageJson($version);
 
-        if (!is_file("gulpfile.js")) {
-            return $this->error($cli, "Unable to find gulpfile");
+        // gulp
+
+        if (!$this->hasGulpfile($cli)) {
+            return false;
         }
 
         $this->info($cli, "Running gulp dist");
@@ -79,13 +103,12 @@ class Distribution implements Command
 
     private function versionFromPackageJson(): string
     {
-        $packageJson = json_decode(file_get_contents("package.json"), true);
-
+        $packageJson = $this->packageJson();
         return $packageJson['version'];
     }
 
     /**
-     * @throws \z4kn4fein\SemVer\VersionFormatException
+     * @throws VersionFormatException
      */
     private function incrementVersion($cli, $ver): string
     {
@@ -93,39 +116,22 @@ class Distribution implements Command
             $this->info($cli, "no_increment");
         }
         $semver = Version::parse($ver);
-        // todo
+
+        if ($this->major == true) {
+            return (string)$semver->getNextMajorVersion();
+        } else if ($this->minor == true) {
+            return (string)$semver->getNextMinorVersion();
+        }
         return (string)$semver->getNextPatchVersion();
     }
 
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     *
-     * @return bool
-     */
-    protected function error(SimpleCli $cli, string $text): bool
+    private function updatePackageJson($version): void
     {
-        $cli->writeLine($text, 'red');
-        return false;
-    }
+        $packageJson = $this->packageJson();
+        $packageJson['version'] = $version;
 
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     */
-    protected function info(SimpleCli $cli, string $text): void
-    {
-        $cli->writeLine($text, 'light_cyan');
-    }
-
-    /**
-     * @param SimpleCli $cli
-     * @param string $text
-     */
-    protected function verbose(SimpleCli $cli, string $text): void
-    {
-        if ($this->verbose) {
-            $cli->writeLine($text, 'light_cyan');
-        }
+        file_put_contents(
+            "package.json",
+            json_encode($packageJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 }
