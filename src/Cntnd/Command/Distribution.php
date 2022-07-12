@@ -56,16 +56,6 @@ class Distribution extends AbstractCommand
         $increment = !$this->no_increment;
         $forced = !empty($this->version);
 
-
-        $this->info($cli, "Major: $this->major");
-        if ($this->major == true) {
-            $this->info($cli, "Major: Yes");
-        }
-        $this->info($cli, "Minor: $this->minor");
-        if ($this->minor == true) {
-            $this->info($cli, "Minor: Yes");
-        }
-
         $version = $this->versionFromPackageJson();
         $this->info($cli, "Version in package.json: ${version}");
 
